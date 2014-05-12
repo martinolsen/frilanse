@@ -33,9 +33,9 @@ func NewFeedReader(url string) FeedReader {
 		WithGet(url, time.Minute * 5, func(r *http.Response) error {
 			var rss = &RSS{}
 			if bytes, err := ioutil.ReadAll(r.Body); err != nil {
-				return fmt.Errorf("read Body: %s", err)
+				return fmt.Errorf("%s: read Body: %s", url, err)
 			} else if err := xml.Unmarshal(bytes, rss); err != nil {
-				return fmt.Errorf("unmarshal XML: %s", err)
+				return fmt.Errorf("%s: unmarshal XML: %s", url, err)
 			}
 
 			for _, item := range rss.Items {

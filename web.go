@@ -49,11 +49,22 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 		if favicon != "" {
 			fmt.Fprintf(w, `<li style="background: url('%s') no-repeat left center">`, favicon)
-		} else { fmt.Fprint(w, "<li>") }
+		} else {
+			fmt.Fprint(w, "<li>")
+		}
 
 		fmt.Fprintf(w, "<a href=%q>%s</a>\n", job.Link.String(), job.Title)
 	}
 	fmt.Fprintln(w, "</ul>")
 
+	fmt.Fprint(w, AnalyticsCode)
+
 	fmt.Fprintln(w, "</body></html>")
 }
+
+const AnalyticsCode = `<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create','UA-50199033-2','martinolsen.net');ga('send','pageview');</script>`

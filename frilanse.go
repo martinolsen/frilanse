@@ -2,6 +2,7 @@ package frilanse
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -74,12 +75,12 @@ func WithGet(url string, interval time.Duration, fn func(*http.Response) error) 
 		r, err := http.Get(url)
 		if err != nil {
 			log.Printf("%q: get: %s", url, err)
-			continue
-		}
-		defer r.Body.Close()
-
-		if err := fn(r); err != nil {
+		} else if err := fn(r); err != nil {
 			log.Printf("%q: process: %s", err)
+		}
+		if r != nil {
+			io.Copy(ioutil.Discard, r.Body)
+			r.Body.Close()
 		}
 	}
 }
@@ -150,6 +151,7 @@ func AminoIsValid(job *Job) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("could not GET page: %s", err)
 	}
+	defer io.Copy(ioutil.Discard, r.Body)
 	defer r.Body.Close()
 
 	doc, err := html.Parse(r.Body)
@@ -308,6 +310,7 @@ func FlexerIsValid(job *Job) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	defer io.Copy(ioutil.Discard, r.Body)
 	defer r.Body.Close()
 
 	doc, err := html.Parse(r.Body)
